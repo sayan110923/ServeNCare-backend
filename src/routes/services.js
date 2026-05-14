@@ -19,7 +19,7 @@ const listValidators = [
   q('limit').optional().isInt({ min: 1, max: 50 }),
 ];
 
-router.get('/', listValidators, async (req, res) => {
+router.get('/', optionalAuthenticate, listValidators, async (req, res) => {
   const errs = validationResult(req);
   if (!errs.isEmpty()) return res.status(400).json({ errors: errs.array() });
   const {
@@ -52,6 +52,9 @@ router.get('/', listValidators, async (req, res) => {
     }
 
     const match = { status: 'active' };
+    if (req.user?.role === 'provider') {
+      match.provider_id = req.user._id;
+    }
     if (categoryIds) match.category_id = { $in: categoryIds };
     if (minPrice != null || maxPrice != null) {
       match.price = {};

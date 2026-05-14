@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getCollection, ObjectId } from '../db/index.js';
+import { optionalAuthenticate } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -155,7 +156,7 @@ router.get('/', async (req, res) => {
 });
 
 /** Public: one verified provider + their active services */
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuthenticate, async (req, res) => {
   let oid;
   try {
     oid = new ObjectId(req.params.id);
@@ -205,7 +206,10 @@ router.get('/:id', async (req, res) => {
       longitude: pp?.longitude ?? null,
     };
 
-    res.json({ provider: prov, services: withBadges });
+    const hidePeerListings =
+      req.user?.role === 'provider' && req.user.id !== prov.id;
+
+    res.json({ provider: prov, services: hidePeerListings ? [] : withBadges });
   } catch (e) {
     console.error('Public provider detail error:', e);
     res.status(500).json({ error: 'Failed to load provider' });
