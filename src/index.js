@@ -26,7 +26,7 @@ import paymentsRoutes from './routes/payments.js';
 
 const app = express();
 
-app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(cors({ origin: config.frontendOrigins, credentials: true }));
 app.use(express.json());
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
