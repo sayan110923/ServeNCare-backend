@@ -1,8 +1,12 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { MongoClient, ObjectId } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 
-dotenv.config();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Always load backend/.env even when cwd is scripts/ (e.g. `cd scripts && node seed.js`).
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 let uri = process.env.DATABASE_URL || 'mongodb://localhost:27017/servecare';
 if (uri.startsWith('postgres')) uri = 'mongodb://localhost:27017/servecare';
